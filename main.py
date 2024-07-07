@@ -1,7 +1,8 @@
 import os
 from typing import Final
 from dotenv import load_dotenv
-from discord import Intents, Client, Message
+from discord import Intents, Client
+from discord.ext import commands
 from response import get_response
 
 load_dotenv()
@@ -9,7 +10,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 
 intents = Intents.default()
 intents.message_content = True
-client = Client(intents=intents)
+bot = commands.Bot(intents=intents, command_prefix='^')
 
 async def send_message(message, user_message) -> None:
 
@@ -27,15 +28,15 @@ async def send_message(message, user_message) -> None:
     except Exception as error:
         print(error)
 
-@client.event
+@bot.event
 async def on_ready() -> None:
 
-    print(f'{client.user} is now running!')
+    print(f'{bot.user} is now running!')
 
-@client.event
+@bot.event
 async def on_message(message) -> None:
 
-    if message.author == client.user:
+    if message.author == bot.user:
         return
 
     username = str(message.author)
@@ -43,11 +44,21 @@ async def on_message(message) -> None:
     channel = str(message.channel)
 
     print(f'[{channel}] {username} : "{user_message}"')
-    await send_message(message, user_message)
+    if user_message[0] == '^':
+        choice = bot.process_commands(message)
+    else:
+        choice = send_message(message, user_message)
+
+    await choice
+
+@bot.command()
+async def hello(ctx):
+
+    await ctx.send(f'hello, {ctx.author}.')
 
 def main() -> None:
 
-    client.run(token=TOKEN)
+    bot.run(token=TOKEN)
 
 if __name__ == "__main__":
 

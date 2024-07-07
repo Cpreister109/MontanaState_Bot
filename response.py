@@ -5,7 +5,7 @@ def get_response(user_input):
 
     if lowered == '':
         return '....nothing?'
-    elif 'hello' in lowered:
+    elif 'hi' in lowered:
         return 'Welcome to Montana State!'
     else:
         return choice(['I dont understand...', 'Try again', 'Can you say that any differently?'])
