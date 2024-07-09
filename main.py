@@ -1,7 +1,8 @@
 import os
+import discord
 from typing import Final
 from dotenv import load_dotenv
-from discord import Intents, Client
+from discord import *
 from discord.ext import commands
 from response import get_response
 
@@ -55,6 +56,17 @@ async def on_message(message) -> None:
 async def hello(ctx):
 
     await ctx.send(f'hello, {ctx.author}.')
+
+@bot.command()
+@commands.has_permissions(kick_members=True)
+async def kick(ctx, member: discord.Member, *, reason=None):
+    
+    try:
+        await member.kick(reason=reason)
+        await ctx.send(f'{member} has been kicked from the server! :(')
+
+    except:
+        await ctx.send(f'kicking {member} failed.')
 
 def main() -> None:
 
